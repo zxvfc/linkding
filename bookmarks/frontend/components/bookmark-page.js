@@ -23,7 +23,26 @@ class BookmarkPage extends HeadlessElement {
     this.updateTooltips(items);
     this.updateNotesToggles(items, this.oldItems);
     this.updateBulkEdit(items, this.oldItems);
+    this.updateBookmarkCount();
     this.oldItems = items;
+  }
+
+  updateBookmarkCount() {
+    const countElement = this.querySelector("[data-bookmark-count]");
+    if (!countElement) {
+      return;
+    }
+
+    const totalHolder = this.querySelector("[data-bookmarks-total]");
+    const total = parseInt(totalHolder?.dataset.bookmarksTotal, 10) || 0;
+
+    if (!total) {
+      countElement.classList.add("d-none");
+    } else {
+      countElement.classList.remove("d-none");
+      countElement.textContent = total;
+      countElement.setAttribute("aria-label", `${total} bookmarks`);
+    }
   }
 
   updateTooltips(items) {
