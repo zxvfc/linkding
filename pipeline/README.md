@@ -14,7 +14,7 @@ Files (committed to the fork; the orchestrator never adds them to task commits):
   and uses the printed waves to schedule executors
 - `pipeline/issues/*.md` — optional local demo issues (not in the repo, create your own;
   the first `# ` line is the title)
-- `.pipeline/issue-N/` — run outputs: `spec.md`, `review.md`, `pr.md` (local, not committed)
+- `.pipeline/issue-N/` — run outputs: `spec.md`, `review.md`, `pr.md` (git-ignored)
 
 ## Demo
 
@@ -57,8 +57,8 @@ permissions and the orchestrator's reverts.
   `git push --force -u origin agent/*`, `gh issue view|comment` and `gh pr list|create|comment`
   with `--repo zxvfc/linkding`. Denied: anything with `sissbruecker`, `gh pr merge`, pushes to master.
 - planner / reviewer: read-only (reviewer may use git diff/log/show).
-- executor: no edits in `bookmarks/tests/`, `pipeline/`, `.agents/`, `opencode.json`; no git
-  writes; may run `uv run pytest` and `uv run ruff`.
+- executor: no edits in `bookmarks/tests/`, `pipeline/`, `.agents/`, `opencode.json`, `.pipeline/`,
+  `.git/`; no git writes; may run `uv run pytest` and `uv run ruff`.
 - tester: edits only `bookmarks/tests/**` (writes `test_agent_<topic>.py`), may run `uv run pytest`.
 - After executors and tester, the orchestrator reverts anything changed outside the allowed files.
 - MCP servers from the global config (chrome-devtools) are disabled for this project.
