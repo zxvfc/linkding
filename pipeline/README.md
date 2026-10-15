@@ -37,8 +37,8 @@ per task `Tk: ... (#N)`, `Add agent tests (#N)` and maybe `Fix failing tests (#N
 `git switch master` to go back. A re-run resets `agent/issue-N` and force-pushes it; an existing PR
 for the branch is reused.
 
-Without TUI: `opencode run --agent orchestrator -m opencode/big-pickle --auto "Run the pipeline for: 12"`
-(`opencode run` ignores the agent's model, so pass `-m`).
+Without TUI: `opencode run --agent orchestrator -m <model> --auto "Run the pipeline for: 12"`
+(`opencode run` ignores the agent's model from `opencode.json`, so pass `-m` explicitly).
 
 Validate a spec by hand: `python3 pipeline/specfile.py .pipeline/issue-N/spec.md --repo .`
 It checks sections (`# Goal`, `# Context`, `# Requirements`, `# Tasks`, `# Done when`),
@@ -61,5 +61,3 @@ paths (`pipeline/`, `.agents/`, `.pipeline/`, `opencode.json`, `.git/`), then pr
 - tester: edits only `bookmarks/tests/**` (writes `test_agent_<topic>.py`), may run `uv run pytest`.
 - After executors and tester, the orchestrator reverts anything changed outside the allowed files.
 - MCP servers from the global config (chrome-devtools) are disabled for this project.
-
-Free model (`opencode/big-pickle`) can skip steps or hit rate limits: rehearse 2–3 times.
