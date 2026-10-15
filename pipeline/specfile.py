@@ -1,6 +1,6 @@
 """Parse and validate spec.md produced by the planner.
 
-Format:
+Format (only Requirements and Tasks are parsed, other sections are free text):
 
     # Goal
     # Context
@@ -19,9 +19,6 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-
-SECTIONS = ["Goal", "Context", "Requirements", "Tasks", "Done when"]
-FORBIDDEN_PREFIXES = ("pipeline/", ".agents/", ".pipeline/", "opencode.json", ".git/")
 
 REQ_RE = re.compile(r"^-\s*(R\d+)\s*:\s*(.+)$")
 TASK_RE = re.compile(r"^-\s*(T\d+)\s*:\s*(.+)$")
@@ -109,20 +106,9 @@ def parse(text: str) -> Spec:
         m = re.match(r"^#\s+(.+?)\s*$", line)
         if m:
             current = m.group(1)
-            if current in sections:
-                errors.append(f"duplicate section '# {current}'")
-            sections[current] = []
+            sections.setdefault(current, [])
         elif current is not None:
             sections[current].append(line)
-
-    for name in SECTIONS:
-        if name not in sections:
-            errors.append(f"missing section '# {name}'")
-        elif not "\n".join(sections[name]).strip():
-            errors.append(f"section '# {name}' is empty")
-    for name in sections:
-        if name not in SECTIONS:
-            errors.append(f"unexpected section '# {name}'")
 
     requirements: list[Requirement] = []
     for line in sections.get("Requirements", []):
@@ -213,8 +199,6 @@ def validate(text: str, repo: str | Path | None = None) -> Spec:
         for f in t.files:
             if f.path.startswith("/") or ".." in Path(f.path).parts:
                 errors.append(f"{t.id}: path must be relative to repo: {f.path}")
-            elif f.path.startswith(FORBIDDEN_PREFIXES):
-                errors.append(f"{t.id}: path is not allowed: {f.path}")
             elif repo is not None:
                 exists = (Path(repo) / f.path).exists()
                 if not f.new and not exists:

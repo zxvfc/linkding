@@ -41,10 +41,11 @@ Without TUI: `opencode run --agent orchestrator -m <model> --auto "Run the pipel
 (`opencode run` ignores the agent's model from `opencode.json`, so pass `-m` explicitly).
 
 Validate a spec by hand: `python3 pipeline/specfile.py .pipeline/issue-N/spec.md --repo .`
-It checks sections (`# Goal`, `# Context`, `# Requirements`, `# Tasks`, `# Done when`),
-`R*` with a `Scenario:` line, `T* ... | files: ... | depends: ... | covers: ...`, unknown ids,
-uncovered requirements, dependency cycles, existing files (new ones marked `(new)`) and forbidden
-paths (`pipeline/`, `.agents/`, `.pipeline/`, `opencode.json`, `.git/`), then prints the waves.
+It parses `# Requirements` and `# Tasks` and checks: `R*` with a `Scenario:` line,
+`T* ... | files: ... | depends: ... | covers: ...`, unknown ids, uncovered requirements,
+dependency cycles, repo-relative paths that exist (new ones marked `(new)`), then prints the waves.
+Other sections and which paths agents may touch are not checked here: that is up to the prompts,
+permissions and the orchestrator's reverts.
 
 ## Guard rails (permissions in opencode.json)
 
