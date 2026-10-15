@@ -4,69 +4,9 @@
     "chrome-devtools": { "type": "local", "command": ["true"], "enabled": false },
     "chrome-devtools--headless": { "type": "local", "command": ["true"], "enabled": false }
   },
-  "commands": {
-    "issue": {
-      "description": "Run the agent pipeline for an issue: /issue 12 | /issue pipeline/issues/01-....md [no-publish]",
-      "agent": "orchestrator",
-      "template": "Run the pipeline for: $ARGUMENTS"
-    }
-  },
   "agents": {
-    "orchestrator": {
-      "mode": "primary",
-      "model": "opencode/big-pickle",
-      "description": "Runs the pipeline for an issue: planner -> executors -> tester -> pytest -> reviewer -> PR",
-      "system": "{file:./.agents/orchestrator.md}",
-      "permissions": [
-        { "action": "edit", "resource": "*", "effect": "deny" },
-        { "action": "edit", "resource": ".pipeline/**", "effect": "allow" },
-        { "action": "external_directory", "resource": "*", "effect": "deny" },
-        { "action": "webfetch", "resource": "*", "effect": "deny" },
-        { "action": "websearch", "resource": "*", "effect": "deny" },
-        { "action": "subagent", "resource": "*", "effect": "deny" },
-        { "action": "subagent", "resource": "planner", "effect": "allow" },
-        { "action": "subagent", "resource": "executor", "effect": "allow" },
-        { "action": "subagent", "resource": "tester", "effect": "allow" },
-        { "action": "subagent", "resource": "reviewer", "effect": "allow" },
-        { "action": "shell", "resource": "*", "effect": "deny" },
-        { "action": "shell", "resource": "pwd", "effect": "allow" },
-        { "action": "shell", "resource": "ls*", "effect": "allow" },
-        { "action": "shell", "resource": "cat *", "effect": "allow" },
-        { "action": "shell", "resource": "head *", "effect": "allow" },
-        { "action": "shell", "resource": "tail *", "effect": "allow" },
-        { "action": "shell", "resource": "grep *", "effect": "allow" },
-        { "action": "shell", "resource": "rg *", "effect": "allow" },
-        { "action": "shell", "resource": "wc *", "effect": "allow" },
-        { "action": "shell", "resource": "mkdir -p data/*", "effect": "allow" },
-        { "action": "shell", "resource": "mkdir -p .pipeline/*", "effect": "allow" },
-        { "action": "shell", "resource": "python3 pipeline/specfile.py *", "effect": "allow" },
-        { "action": "shell", "resource": "uv run pytest *", "effect": "allow" },
-        { "action": "shell", "resource": "git status*", "effect": "allow" },
-        { "action": "shell", "resource": "git diff*", "effect": "allow" },
-        { "action": "shell", "resource": "git log*", "effect": "allow" },
-        { "action": "shell", "resource": "git show*", "effect": "allow" },
-        { "action": "shell", "resource": "git rev-parse*", "effect": "allow" },
-        { "action": "shell", "resource": "git branch --show-current", "effect": "allow" },
-        { "action": "shell", "resource": "git remote get-url origin", "effect": "allow" },
-        { "action": "shell", "resource": "git switch -C agent/*", "effect": "allow" },
-        { "action": "shell", "resource": "git switch master", "effect": "allow" },
-        { "action": "shell", "resource": "git add *", "effect": "allow" },
-        { "action": "shell", "resource": "git commit *", "effect": "allow" },
-        { "action": "shell", "resource": "git restore *", "effect": "allow" },
-        { "action": "shell", "resource": "git push --force -u origin agent/*", "effect": "allow" },
-        { "action": "shell", "resource": "gh issue view --repo zxvfc/linkding *", "effect": "allow" },
-        { "action": "shell", "resource": "gh issue comment --repo zxvfc/linkding *", "effect": "allow" },
-        { "action": "shell", "resource": "gh pr list --repo zxvfc/linkding *", "effect": "allow" },
-        { "action": "shell", "resource": "gh pr create --repo zxvfc/linkding *", "effect": "allow" },
-        { "action": "shell", "resource": "gh pr comment --repo zxvfc/linkding *", "effect": "allow" },
-        { "action": "shell", "resource": "*sissbruecker*", "effect": "deny" },
-        { "action": "shell", "resource": "gh pr merge*", "effect": "deny" },
-        { "action": "shell", "resource": "git push * master*", "effect": "deny" },
-        { "action": "shell", "resource": "cd *", "effect": "deny" }
-      ]
-    },
     "planner": {
-      "mode": "subagent",
+      "mode": "primary",
       "model": "opencode/big-pickle",
       "description": "Reads the issue and the code, returns spec.md between BEGIN_SPEC/END_SPEC. Read-only.",
       "system": "{file:./.agents/planner.md}",
@@ -88,7 +28,7 @@
       ]
     },
     "executor": {
-      "mode": "subagent",
+      "mode": "primary",
       "model": "opencode/big-pickle",
       "description": "Implements ONE task of the spec (given spec + task id). Edits only the task's files, no tests, no git.",
       "system": "{file:./.agents/executor.md}",
@@ -100,6 +40,7 @@
         { "action": "edit", "resource": "pipeline/**", "effect": "deny" },
         { "action": "edit", "resource": ".pipeline/**", "effect": "deny" },
         { "action": "edit", "resource": ".git/**", "effect": "deny" },
+        { "action": "edit", "resource": ".github/**", "effect": "deny" },
         { "action": "subagent", "resource": "*", "effect": "deny" },
         { "action": "external_directory", "resource": "*", "effect": "deny" },
         { "action": "webfetch", "resource": "*", "effect": "deny" },
@@ -119,7 +60,7 @@
       ]
     },
     "tester": {
-      "mode": "subagent",
+      "mode": "primary",
       "model": "opencode/big-pickle",
       "description": "Writes tests for the spec requirements in bookmarks/tests/test_agent_<topic>.py and runs them.",
       "system": "{file:./.agents/tester.md}",
@@ -142,7 +83,7 @@
       ]
     },
     "reviewer": {
-      "mode": "subagent",
+      "mode": "primary",
       "model": "opencode/big-pickle",
       "description": "Reviews the branch diff against the spec, returns JSON between BEGIN_REVIEW/END_REVIEW. Read-only.",
       "system": "{file:./.agents/reviewer.md}",

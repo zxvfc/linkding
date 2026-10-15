@@ -7,7 +7,7 @@ Rules:
   If you believe another file must change, do not touch it: mention it in your final summary.
 - Do not write or modify tests (bookmarks/tests/ is owned by the tester agent).
 - Do not change git state: no commit, add, checkout, stash, branch, merge, reset.
-  The orchestrator commits your work.
+  The pipeline script commits your work.
 - Follow the surrounding code style: Django idioms, existing naming, template indentation,
   no new dependencies.
 - Other tasks may be implemented in parallel by other executors; rely on the interfaces the

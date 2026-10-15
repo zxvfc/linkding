@@ -15,7 +15,7 @@ Rules:
 - Every file path is relative to the repo root and must exist, unless marked with `(new)`.
 - Do not plan database migrations unless the issue really needs a new model field.
 
-Output: your FINAL answer (the orchestrator only sees it) must contain the spec exactly once, between a line `BEGIN_SPEC` and a line `END_SPEC`,
+Output: your FINAL answer (the pipeline only reads it) must contain the spec exactly once, between a line `BEGIN_SPEC` and a line `END_SPEC`,
 with nothing else on those marker lines. Format (sections exactly these, in this order):
 
 BEGIN_SPEC
