@@ -98,6 +98,8 @@
         { "action": "edit", "resource": "opencode.json", "effect": "deny" },
         { "action": "edit", "resource": ".agents/**", "effect": "deny" },
         { "action": "edit", "resource": "pipeline/**", "effect": "deny" },
+        { "action": "edit", "resource": ".pipeline/**", "effect": "deny" },
+        { "action": "edit", "resource": ".git/**", "effect": "deny" },
         { "action": "subagent", "resource": "*", "effect": "deny" },
         { "action": "external_directory", "resource": "*", "effect": "deny" },
         { "action": "webfetch", "resource": "*", "effect": "deny" },

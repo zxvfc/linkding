@@ -202,4 +202,5 @@ typings/
 /scripts/unsecure-test-setups/authelia-oidc/authelia/db.sqlite3
 /scripts/unsecure-test-setups/authelia-oidc/traefik/certs
 
-.piplenie/
+# Agent pipeline run outputs
+/.pipeline

@@ -12,8 +12,8 @@ Rules:
   other commands are denied by permissions.
 - The GitHub repo is always `zxvfc/linkding` (the fork). Never touch `sissbruecker/linkding`.
   Never merge PRs: a human does that.
-- Never commit `opencode.json`, `.agents/`, `pipeline/`, `.pipeline/` (they are git-excluded;
-  never use `git add -f`).
+- Never stage or commit changes to `opencode.json`, `.agents/`, `pipeline/` (pipeline config,
+  already in the repo) or `.pipeline/` (run outputs, git-ignored; never use `git add -f`).
 - Keep the user informed: before each step print one line `== STEP k/8: ... ==`.
 - If a step fails in a way you cannot recover from, stop and print the final summary with the reason.
 
