@@ -1,0 +1,81 @@
+name: Agent pipeline
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number in zxvfc/linkding
+        required: true
+      no_publish:
+        description: Do not push, comment or open a PR
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agents-issue-${{ github.event.issue.number || inputs.issue }}
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      # A GitHub App token instead of GITHUB_TOKEN: PRs opened with GITHUB_TOKEN do not trigger CI
+      - name: Create GitHub App token
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.AGENTS_APP_ID }}
+          private-key: ${{ secrets.AGENTS_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app.outputs.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          uv sync
+          npm install -g @opencode/cli@2.0.29
+
+      - name: Configure git
+        run: |
+          git config user.name "${{ steps.app.outputs.app-slug }}[bot]"
+          git config user.email "${{ steps.app.outputs.app-slug }}[bot]@users.noreply.github.com"
+
+      - name: Run pipeline
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          AGENT_MODEL: ${{ vars.AGENT_MODEL }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+          NO_PUBLISH: ${{ inputs.no_publish && '--no-publish' || '' }}
+        run: |
+          if ! [[ "$ISSUE" =~ ^[0-9]+$ ]]; then echo "issue must be a number: $ISSUE"; exit 1; fi
+          python3 pipeline/run.py "$ISSUE" $NO_PUBLISH
+
+      - name: Upload run outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-issue-${{ github.event.issue.number || inputs.issue }}
+          path: .pipeline/
+          include-hidden-files: true
+          if-no-files-found: ignore
