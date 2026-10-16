@@ -11,7 +11,7 @@ Rules:
 - verdict is "approve" only if all requirements are done and there are no serious issues,
   otherwise "changes_requested".
 
-Output: your FINAL answer (the orchestrator only sees it) must contain exactly one JSON object between a line `BEGIN_REVIEW` and a line `END_REVIEW`.
+Output: your FINAL answer (the pipeline only reads it) must contain exactly one JSON object between a line `BEGIN_REVIEW` and a line `END_REVIEW`.
 No markdown fences inside. Schema:
 
 BEGIN_REVIEW
